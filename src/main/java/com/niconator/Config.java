@@ -8,103 +8,43 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 @EventBusSubscriber(modid = FarlandsofPain.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class Config
 {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder().comment("The scaling formulas for mob stats.\nAvailable variables: use x_coord, y_coord, z_coord, dist_from_spawn, nearest_player_level, entity_health and current_day variables.\nAvailable operators: +, -, *, /, ^, %.\nAvailable functions: min, max, clamp, round,  abs, acos, asin, atan, cbrt, ceil, cos, cosh, exp, floor, log, log10, log2, sin, sinh, sqrt, tan, tanh, signum.");
 
     public static final ModConfigSpec.ConfigValue<String> HEALTH_FORMULA = BUILDER
-            .comment("Formula for health scaling (use x_coord, y_coord, z_coord, dist_from_spawn, nearest_player_level, entity_health an current_day variables)")
-            .define("health.healthFormula", "(dist_from_spawn / 1000) + 1.0");
-
-    public static final ModConfigSpec.ConfigValue<Double> MIN_HEALTH = BUILDER
-            .comment("Minimum health multiplier")
-            .define("health.minHealth", 1.0);
-
-    public static final ModConfigSpec.ConfigValue<Double> MAX_HEALTH = BUILDER
-            .comment("Maximum health multiplier")
-            .define("health.maxHealth", 1.0);
+            .comment("The scaling formula for health. The default is: max((dist_from_spawn / 750) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 0.75, 0.75)")
+            .define("health.healthFormula", "max((dist_from_spawn / 750) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 0.75, 0.75)"); 
 
     public static final ModConfigSpec.ConfigValue<String> DAMAGE_FORMULA = BUILDER
-            .comment("Formula for damage scaling (use x_coord, y_coord, z_coord, dist_from_spawn, nearest_player_level, entity_health an current_day variables)")
-            .define("damage.damageFormula", "(dist_from_spawn / 500) + 1.0");
-
-    public static final ModConfigSpec.ConfigValue<Double> MIN_DAMAGE = BUILDER
-            .comment("Minimum damage multiplier")
-            .define("damage.minDamage", 1.0);
-
-    public static final ModConfigSpec.ConfigValue<Double> MAX_DAMAGE = BUILDER
-            .comment("Maximum damage multiplier")
-            .define("damage.maxDamage", 1.0);
+            .comment("The scaling formula for damage received. The default is: max((dist_from_spawn / 750) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 0.75, 0.75)")
+            .define("damage.damageFormula", "max((dist_from_spawn / 750) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 0.75, 0.75)");
 
     public static final ModConfigSpec.ConfigValue<String> LOOT_FORMULA = BUILDER
-            .comment("Formula for loot scaling (use x_coord, y_coord, z_coord, dist_from_spawn, nearest_player_level, entity_health an current_day variables)")
-            .define("loot.lootFormula", "(dist_from_spawn / 500) + 1.0");
-
-    public static final ModConfigSpec.ConfigValue<Double> MIN_LOOT = BUILDER
-            .comment("Minimum loot multiplier")
-            .define("loot.minLoot", 1.0);
-
-    public static final ModConfigSpec.ConfigValue<Double> MAX_LOOT = BUILDER
-            .comment("Maximum loot multiplier")
-            .define("loot.maxLoot", 1.0);
+            .comment("The scaling formula for loot. The default is: clamp((dist_from_spawn / 750) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 1.0, 1.0, 10.0)")
+            .define("loot.lootFormula", "clamp((dist_from_spawn / 750) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 1.0, 1.0, 10.0)");
 
     public static final ModConfigSpec.ConfigValue<String> SPEED_FORMULA = BUILDER
-            .comment("Formula for speed scaling (use x_coord, y_coord, z_coord, dist_from_spawn, nearest_player_level, entity_health an current_day variables)")
-            .define("speed.speedFormula", "(dist_from_spawn / 500) + 1.0");
-
-    public static final ModConfigSpec.ConfigValue<Double> MIN_SPEED = BUILDER
-            .comment("Minimum speed multiplier")
-            .define("speed.minSpeed", 1.0);
-
-    public static final ModConfigSpec.ConfigValue<Double> MAX_SPEED = BUILDER
-            .comment("Maximum speed multiplier")
-            .define("speed.maxSpeed", 1.0);
+            .comment("The scaling formula for speed. The default is: clamp((dist_from_spawn / 1500) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 1.0, 1.0, 2.0)")
+            .define("speed.speedFormula", "clamp((dist_from_spawn / 1500) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 1.0, 1.0, 2.0)");
 
     public static final ModConfigSpec.ConfigValue<String> KNOCKBACK_FORMULA = BUILDER
-            .comment("Formula for knockback scaling (use x_coord, y_coord, z_coord, dist_from_spawn, nearest_player_level, entity_health an current_day variables)")
-            .define("knockback.knockbackFormula", "(dist_from_spawn / 500) + 1.0");
-
-    public static final ModConfigSpec.ConfigValue<Double> MIN_KNOCKBACK = BUILDER
-            .comment("Minimum knockback multiplier")
-            .define("knockback.minKnockback", 1.0);
-
-    public static final ModConfigSpec.ConfigValue<Double> MAX_KNOCKBACK = BUILDER
-            .comment("Maximum knockback multiplier")
-            .define("knockback.maxKnockback", 1.0);
+            .comment("The scaling formula for knockback resistance. The default is: clamp((dist_from_spawn / 1500) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 0.9, 0.9, 2.0)")
+            .define("knockback.knockbackFormula", "clamp((dist_from_spawn / 1500) + (abs(y_coord - 70) / 100) + (nearest_player_level / 50) - 0.9, 0.9, 2.0)");
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
     public static String healthFormula;
-    public static double minHealth;
-    public static double maxHealth;
     public static String damageFormula;
-    public static double minDamage;
-    public static double maxDamage;
     public static String lootFormula;
-    public static double minLoot;
-    public static double maxLoot;
     public static String speedFormula;
-    public static double minSpeed;
-    public static double maxSpeed;
     public static String knockbackFormula;
-    public static double minKnockback;
-    public static double maxKnockback;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
     {
         healthFormula = HEALTH_FORMULA.get();
-        minHealth = MIN_HEALTH.get();
-        maxHealth = MAX_HEALTH.get();
         damageFormula = DAMAGE_FORMULA.get();
-        minDamage = MIN_DAMAGE.get();
-        maxDamage = MAX_DAMAGE.get();
         lootFormula = LOOT_FORMULA.get();
-        minLoot = MIN_LOOT.get();
-        maxLoot = MAX_LOOT.get();
         speedFormula = SPEED_FORMULA.get();
-        minSpeed = MIN_SPEED.get();
-        maxSpeed = MAX_SPEED.get();
         knockbackFormula = KNOCKBACK_FORMULA.get();
-        minKnockback = MIN_KNOCKBACK.get();
-        maxKnockback = MAX_KNOCKBACK.get();
     }
 }

@@ -37,6 +37,21 @@ public class FarlandsofPain {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
+    // public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+    //     dispatcher.register(Commands.literal("debugcommand")
+    //         .requires(source -> source.hasPermission(2))
+    //         .executes(context -> {
+    //             debugcommand(context);
+    //             return Command.SINGLE_SUCCESS;
+    //         }));
+    // }
+    //
+    // @SubscribeEvent
+    // public void onRegisterCommands(RegisterCommandsEvent event) {
+    //     FarlandsofPain.register(event.getDispatcher());
+    // }
+
+    // Apply the scaling to mob stats
     @SubscribeEvent
     public void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof LivingEntity) {
@@ -48,7 +63,7 @@ public class FarlandsofPain {
             }
 
             // Apply the scaling to health
-            double healthMultiplier = Utils.calculateScalingMultimplier(entity, Config.healthFormula, Config.minHealth, Config.maxHealth);
+            double healthMultiplier = Utils.calculateScalingMultimplier(entity, Config.healthFormula);
             LOGGER.debug(MODID + ": Health multiplier: " + healthMultiplier + " evaluated with formula: " + Config.healthFormula);
 
             AttributeInstance healthAttribute = entity.getAttribute(Attributes.MAX_HEALTH);
@@ -58,7 +73,7 @@ public class FarlandsofPain {
             }
 
             // Apply the scaling to speed
-            double speedMultiplier = Utils.calculateScalingMultimplier(entity, Config.speedFormula, Config.minSpeed, Config.maxSpeed);
+            double speedMultiplier = Utils.calculateScalingMultimplier(entity, Config.speedFormula);
             LOGGER.debug(MODID + ": Speed multiplier: " + speedMultiplier + " evaluated with formula: " + Config.speedFormula);
     
             AttributeInstance speedAttribute = entity.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -67,7 +82,7 @@ public class FarlandsofPain {
             }
 
             // Apply the scaling to knockback resistance
-            double knockbackMultiplier = Utils.calculateScalingMultimplier(entity, Config.knockbackFormula, Config.minKnockback, Config.maxKnockback);
+            double knockbackMultiplier = Utils.calculateScalingMultimplier(entity, Config.knockbackFormula);
             LOGGER.debug(MODID + ": Knockback multiplier: " + knockbackMultiplier + " evaluated with formula: " + Config.knockbackFormula);
     
             AttributeInstance knockbackAttribute = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
@@ -77,19 +92,22 @@ public class FarlandsofPain {
         }
     }
 
+    // Apply the scaling to damage received
     @SubscribeEvent
     public void onEntityHurt(LivingDamageEvent.Pre event) {
         if (!(event.getSource().getEntity() instanceof ServerPlayer) && event.getEntity() != null) {
-            float damageMultiplier = (float) Utils.calculateScalingMultimplier((LivingEntity) event.getEntity(), Config.damageFormula, Config.minDamage, Config.maxDamage);
+            float damageMultiplier = (float) Utils.calculateScalingMultimplier((LivingEntity) event.getEntity(), Config.damageFormula);
             event.setNewDamage(event.getNewDamage() * damageMultiplier);
             LOGGER.debug(MODID + ": Damage multiplier: " + damageMultiplier + " evaluated with formula: " + Config.damageFormula);
         }
     }
 
+    // Apply the scaling to loot
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
-        int lootMultiplier = (int) Utils.calculateScalingMultimplier((LivingEntity) event.getEntity(), Config.lootFormula, Config.minLoot, Config.maxLoot);
+        int lootMultiplier = (int) Utils.calculateScalingMultimplier((LivingEntity) event.getEntity(), Config.lootFormula);
+        LOGGER.debug(MODID + ": Loot multiplier: " + lootMultiplier + " evaluated with formula: " + Config.lootFormula);
 
         if (!entity.level().isClientSide) { // Ensure it's server-side
             ServerLevel serverWorld = (ServerLevel) entity.level();
@@ -117,4 +135,3 @@ public class FarlandsofPain {
 
 // To Do:
 // - Danger-O-Meter
-// - Find good default values
