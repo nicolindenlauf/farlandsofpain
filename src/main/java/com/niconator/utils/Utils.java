@@ -59,13 +59,13 @@ public class Utils {
         double dist = Math.sqrt((evaluatedCoords[0] * evaluatedCoords[0]) + (evaluatedCoords[2] * evaluatedCoords[2]));
 
         Player nearestPlayer = entity.level().getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 256.0, true);
-        double nearestPlayerlevel = 0.0;
+        double nearestPlayerLevel = 0.0;
         if (nearestPlayer != null) {
-            nearestPlayerlevel = nearestPlayer.experienceLevel;
+            nearestPlayerLevel = nearestPlayer.experienceLevel;
         }
 
         // Evaluate the formula
-        double multiplier = 1.0; // Fallback value
+        double multiplier;
         try {
             Expression expression = new ExpressionBuilder(formula)
                     .functions(lower, higher, clamp, round)
@@ -75,13 +75,14 @@ public class Utils {
                     .setVariable("y_coord", evaluatedCoords[1])
                     .setVariable("z_coord", evaluatedCoords[2])
                     .setVariable("dist_from_spawn", dist)
-                    .setVariable("nearest_player_level", nearestPlayerlevel)
+                    .setVariable("nearest_player_level", nearestPlayerLevel)
                     .setVariable("entity_health", entity.getHealth())
                     .setVariable("current_day", entity.level().getGameTime()/24000L);
 
             multiplier = expression.evaluate();
         } catch (Exception e) {
             FarlandsofPain.LOGGER.warn(FarlandsofPain.MODID + ": Error evaluating formula: " + formula + ": " + e.getMessage());
+            multiplier = 1.0;
         }
 
         return multiplier;
