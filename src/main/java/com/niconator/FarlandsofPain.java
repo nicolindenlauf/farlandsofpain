@@ -57,24 +57,28 @@ public class FarlandsofPain {
         if (event.getEntity() instanceof LivingEntity) {
             LivingEntity entity = (LivingEntity) event.getEntity();
 
-            if (entity instanceof Player) {
+            if (entity instanceof Player && Config.debug) {
                 LOGGER.debug(MODID + ": Skipping player entity");
                 return;
             }
 
             // Apply the scaling to health
             double healthMultiplier = Utils.calculateScalingMultimplier(entity, Config.healthFormula);
-            LOGGER.debug(MODID + ": Health multiplier: " + healthMultiplier + " evaluated with formula: " + Config.healthFormula);
+            if (Config.debug) {
+                LOGGER.debug(MODID + ": Health multiplier: " + healthMultiplier + " evaluated with formula: " + Config.healthFormula);
+            }
 
             AttributeInstance healthAttribute = entity.getAttribute(Attributes.MAX_HEALTH);
             if (healthAttribute != null) {
                 healthAttribute.setBaseValue(healthAttribute.getBaseValue() * healthMultiplier);
-                entity.setHealth((float) (healthAttribute.getBaseValue() * healthMultiplier));
+                entity.setHealth((float) (healthAttribute.getBaseValue()));
             }
 
             // Apply the scaling to speed
             double speedMultiplier = Utils.calculateScalingMultimplier(entity, Config.speedFormula);
-            LOGGER.debug(MODID + ": Speed multiplier: " + speedMultiplier + " evaluated with formula: " + Config.speedFormula);
+            if (Config.debug) {
+                LOGGER.debug(MODID + ": Speed multiplier: " + speedMultiplier + " evaluated with formula: " + Config.speedFormula);
+            }
     
             AttributeInstance speedAttribute = entity.getAttribute(Attributes.MOVEMENT_SPEED);
             if (speedAttribute != null) {
@@ -83,7 +87,9 @@ public class FarlandsofPain {
 
             // Apply the scaling to knockback resistance
             double knockbackMultiplier = Utils.calculateScalingMultimplier(entity, Config.knockbackFormula);
-            LOGGER.debug(MODID + ": Knockback multiplier: " + knockbackMultiplier + " evaluated with formula: " + Config.knockbackFormula);
+            if (Config.debug) {
+                LOGGER.debug(MODID + ": Knockback multiplier: " + knockbackMultiplier + " evaluated with formula: " + Config.knockbackFormula);
+            }
     
             AttributeInstance knockbackAttribute = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
             if (knockbackAttribute != null) {
@@ -98,7 +104,9 @@ public class FarlandsofPain {
         if (!(event.getSource().getEntity() instanceof ServerPlayer) && event.getEntity() != null) {
             float damageMultiplier = (float) Utils.calculateScalingMultimplier((LivingEntity) event.getEntity(), Config.damageFormula);
             event.setNewDamage(event.getNewDamage() * damageMultiplier);
-            LOGGER.debug(MODID + ": Damage multiplier: " + damageMultiplier + " evaluated with formula: " + Config.damageFormula);
+            if (Config.debug) {
+                LOGGER.debug(MODID + ": Damage multiplier: " + damageMultiplier + " evaluated with formula: " + Config.damageFormula);
+            }
         }
     }
 
@@ -107,7 +115,9 @@ public class FarlandsofPain {
     public void onLivingDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
         int lootMultiplier = (int) Utils.calculateScalingMultimplier((LivingEntity) event.getEntity(), Config.lootFormula);
-        LOGGER.debug(MODID + ": Loot multiplier: " + lootMultiplier + " evaluated with formula: " + Config.lootFormula);
+        if (Config.debug) {
+            LOGGER.debug(MODID + ": Loot multiplier: " + lootMultiplier + " evaluated with formula: " + Config.lootFormula);
+        }
 
         if (!entity.level().isClientSide) { // Ensure it's server-side
             ServerLevel serverWorld = (ServerLevel) entity.level();

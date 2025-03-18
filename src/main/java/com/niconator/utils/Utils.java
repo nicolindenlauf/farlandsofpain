@@ -1,10 +1,10 @@
 package com.niconator.utils;
 
 import com.niconator.FarlandsofPain;
+import com.niconator.Config;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.function.Function;
@@ -51,25 +51,14 @@ public class Utils {
         };
 
         // Get variables
-        String dimensionName = entity.level().dimension().location().toString();
-        FarlandsofPain.LOGGER.debug(FarlandsofPain.MODID + ": Dimension name: " + dimensionName);
-
-        double x_coord = entity.getX();
-        double y_coord = entity.getY();
-        if (dimensionName.equals("minecraft:overworld")) {
-        } else if (dimensionName.equals("minecraft:the_nether")) {
-            y_coord = y_coord - 64 - 128; // overworld ends at -64, nether starts at 128
-        } else if (dimensionName.equals("minecraft:the_end")) {
-            y_coord = y_coord - 64 - 128 - 128 - 70; // overworld ends at -64, nether starts at 128, nether is 128 blocks deep, 70 is neutral height
-        } else if (dimensionName.equals("aether:the_aether")) {
-            y_coord = y_coord + 200 + 70; // clouds are 200 blocks high, 70 is neutral height
+        int[] evaluatedCoords = getEvaluatedCoords(entity);
+        if (Config.debug) {
+            FarlandsofPain.LOGGER.debug(FarlandsofPain.MODID + ": Evaluated coords: " + evaluatedCoords[0] + ", " + evaluatedCoords[1] + ", " + evaluatedCoords[2]);
         }
-        double z_coord = entity.getZ();
 
-        Vec3 vector = new Vec3(x_coord, 0, z_coord);
-        double dist = vector.length();
+        double dist = Math.sqrt((evaluatedCoords[0] * evaluatedCoords[0]) + (evaluatedCoords[2] * evaluatedCoords[2]));
 
-        Player nearestPlayer = entity.level().getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 100.0, true);
+        Player nearestPlayer = entity.level().getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 256.0, true);
         double nearestPlayerlevel = 0.0;
         if (nearestPlayer != null) {
             nearestPlayerlevel = nearestPlayer.experienceLevel;
@@ -82,9 +71,9 @@ public class Utils {
                     .functions(lower, higher, clamp, round)
                     .variables("x_coord", "y_coord", "z_coord", "dist_from_spawn", "nearest_player_level", "entity_health", "current_day") // Define allowed variables
                     .build()
-                    .setVariable("x_coord", x_coord)
-                    .setVariable("y_coord", y_coord)
-                    .setVariable("z_coord", z_coord)
+                    .setVariable("x_coord", evaluatedCoords[0])
+                    .setVariable("y_coord", evaluatedCoords[1])
+                    .setVariable("z_coord", evaluatedCoords[2])
                     .setVariable("dist_from_spawn", dist)
                     .setVariable("nearest_player_level", nearestPlayerlevel)
                     .setVariable("entity_health", entity.getHealth())
@@ -96,5 +85,35 @@ public class Utils {
         }
 
         return multiplier;
+    }
+
+    private static int[] getEvaluatedCoords(LivingEntity entity) {
+        // Get dimension name
+        String dimensionName = entity.level().dimension().location().toString();
+        
+        // Get dimension offset
+        int dimensionOffset;
+        try {
+            dimensionOffset = Config.dimensionOffsets.get(dimensionName);
+        } catch (Exception e) {
+            dimensionOffset = 0;
+            FarlandsofPain.LOGGER.warn(FarlandsofPain.MODID + ": no config for dimension-offset: " + dimensionName + ". defaulting to 0.");
+        }
+        
+        // Evaluate coordinates
+        double x_coord;
+        double y_coord;
+        double z_coord;
+        if (Config.zeroZeroOrigin) {
+            x_coord = entity.getX();
+            y_coord = entity.getY() + dimensionOffset;
+            z_coord = entity.getZ();
+        } else {
+            x_coord = entity.getX() - entity.level().getSharedSpawnPos().getX();
+            y_coord = entity.getY() + dimensionOffset;
+            z_coord = entity.getZ() - entity.level().getSharedSpawnPos().getZ();
+        }
+
+        return new int[] {(int) x_coord, (int) y_coord, (int) z_coord};
     }
 }
