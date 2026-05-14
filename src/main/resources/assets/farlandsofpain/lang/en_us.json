@@ -1,5 +1,10 @@
 {
-  "itemGroup.farlandsofpain": "Example Mod Tab",
-  "block.farlandsofpain.example_block": "Example Block",
-  "item.farlandsofpain.example_item": "Example Item"
+  "command.farlandsofpain.pain_o_meter.enabled": "Pain-O-Meter overlay enabled",
+  "command.farlandsofpain.pain_o_meter.disabled": "Pain-O-Meter overlay disabled",
+  "overlay.farlandsofpain.pain_o_meter.health": "Health",
+  "overlay.farlandsofpain.pain_o_meter.damage": "Damage",
+  "overlay.farlandsofpain.pain_o_meter.speed": "Speed",
+  "overlay.farlandsofpain.pain_o_meter.knockback": "Knockback",
+  "overlay.farlandsofpain.pain_o_meter.loot": "Loot",
+  "overlay.farlandsofpain.pain_o_meter.xp": "XP"
 }
